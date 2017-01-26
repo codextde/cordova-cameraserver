@@ -24,6 +24,16 @@ import android.view.WindowManager;
 import android.content.Context;
 import android.content.res.AssetManager;
 
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+
+import org.apache.cordova.PermissionHelper;
+import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.PluginResult;
+
+import android.Manifest;
+
 
 /**
  * This class echoes a string called from JavaScript.
@@ -63,6 +73,8 @@ public class CameraServer extends CordovaPlugin {
     private static final String OPT_BRIGHTNESS = "brightness";
     private static final String OPT_ENABLED = "enabled";
 
+	public static final int START_CAMERA_SEC = 0;
+    public static final int PERMISSION_DENIED_ERROR = 20;
 
     private String www_root = "";
 	private int port = 8080;
@@ -76,8 +88,10 @@ public class CameraServer extends CordovaPlugin {
 
 	private int brightness = 50;
 	private boolean torchEnabled = false;
+	
+	private CallbackContext callbackContext;
 
-    @Override
+	@Override
     public boolean execute(String action, JSONArray inputs, CallbackContext callbackContext) throws JSONException {
         PluginResult result = null;
         if (ACTION_START_SERVER.equals(action)) {
@@ -136,6 +150,19 @@ public class CameraServer extends CordovaPlugin {
         if(result != null) callbackContext.sendPluginResult( result );
 
         return true;
+    }
+    
+    public void onRequestPermissionResult(int requestCode, String[] permissions,
+                                          int[] grantResults) throws JSONException
+    {
+        for(int r:grantResults)
+        {
+            if(r == PackageManager.PERMISSION_DENIED)
+            {
+                this.callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, PERMISSION_DENIED_ERROR));
+                return;
+            }
+        }
     }
 
     private String __getLocalIpAddress() {
@@ -314,6 +341,36 @@ public class CameraServer extends CordovaPlugin {
 
          // initialize the camera manager :)
          CameraManager.init(cordova.getActivity().getApplicationContext());
+         
+         boolean startCameraPermission = PermissionHelper.hasPermission(this, Manifest.permission.CAMERA);
+
+		
+
+		if(!startCameraPermission) {
+		    startCameraPermission = true;
+		    try {
+		        PackageManager packageManager = this.cordova.getActivity().getPackageManager();
+		        String[] permissionsInPackage = packageManager.getPackageInfo(this.cordova.getActivity().getPackageName(), PackageManager.GET_PERMISSIONS).requestedPermissions;
+		        if (permissionsInPackage != null) {
+		            for (String permission : permissionsInPackage) {
+		                if (permission.equals(Manifest.permission.CAMERA)) {
+		                    startCameraPermission = false;
+		                    break;
+		                }
+		            }
+		        }
+		    } catch (NameNotFoundException e) {
+		        // We are requesting the info for our package, so this should
+		        // never be caught
+		    }
+		}
+		
+		if(!startCameraPermission){
+			this.callbackContext = callbackContext;
+			PermissionHelper.requestPermission(this, START_CAMERA_SEC, Manifest.permission.CAMERA);
+			return null;
+		}
+         
          startCapture();
 
          callbackContext.success();
