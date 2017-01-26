@@ -163,6 +163,7 @@ public class CameraServer extends CordovaPlugin {
                 return;
             }
         }
+        startCapture();
     }
 
     private String __getLocalIpAddress() {

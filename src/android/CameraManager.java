@@ -373,6 +373,9 @@ public final class CameraManager {
 	         result = (info.orientation - degrees + 360) % 360;
 	     }
 	     
+	     if(rotation == 0)
+	     	result -= 90;
+	     
 	     Log.d(TAG, "Image must be rotated to: " + result);				     
 	     
 	     return result;
