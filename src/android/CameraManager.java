@@ -41,7 +41,11 @@ public final class CameraManager {
 	public static int mDesiredHeight = 720;
 	
 	public static boolean DEBUG = true; 
-	public static String TAG = "CameraManager";	
+	public static String TAG = "CameraManager";
+
+	public static String mDesiredFacing = Camera.CameraInfo.CAMERA_FACING_FRONT;	
+
+	
 
 	public static void setDesiredPreviewSize(int width, int height) {
 		mDesiredWidth = width;
@@ -96,13 +100,24 @@ public final class CameraManager {
 		
 		if (camera == null) {
 			if (DEBUG) Log.i(TAG, "Camera opening...");
-			camera = Camera.open();
+			
+			int n = Camera.getNumberOfCameras();
+			android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
+
+			for(int i=0; i<Camera.getNumberOfCameras(); i++){
+				
+				Camera.getCameraInfo(i, info);
+				if(info.facing == mDesiredFacing)
+					break;		
+			}
+
+			camera = Camera.open(i);
 			if (camera == null) {
-				if (DEBUG) Log.i(TAG, "First camera open failed");
-				camera = Camera.open(0);
+				if (DEBUG) Log.i(TAG, "Desired camera open failed");
+				camera = Camera.open();
 				
 				if (camera == null){
-					if (DEBUG) Log.i(TAG, "Second camera open failed");
+					if (DEBUG) Log.i(TAG, "First camera open failed");
 					throw new IOException();
 				}
 			}
@@ -373,8 +388,6 @@ public final class CameraManager {
 	         result = (info.orientation - degrees + 360) % 360;
 	     }
 	     
-	     if(rotation == 0)
-	     	result -= 90;
 	     
 	     Log.d(TAG, "Image must be rotated to: " + result);				     
 	     
