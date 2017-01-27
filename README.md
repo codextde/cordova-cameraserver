@@ -15,12 +15,12 @@ Why over HTTP ?
 
 ## Add the plugin to your cordova project: ##
 
-    cordova plugin add https://github.com/Moonware/cordova-cameraserver   
-    
+    cordova plugin add https://github.com/MetalMaster/cordova-cameraserver   
+
 ## Removing the plugin to your cordova project: ##
 
     cordova plugin rm cordova-plugin-cameraserver      
-    
+
 ## Dependency ##
 
 Since Cordova 4.0, it may be required to install the **cordova-plugin-whitelist** to allow calls to **127.0.0.1** and **localhost**
@@ -29,7 +29,7 @@ Without this step, your application may not be allowed to pull and display image
 
 Please follow installation and setup instructions here: [cordova-plugin-whitelist](https://github.com/apache/cordova-plugin-whitelist/)
 
-    
+
 #Javascript APIs
 
 ```javascript
@@ -44,7 +44,7 @@ getLocalPath( success_callback, error_callback );
 
 getNumRequests( success_callback, error_callback );
 
-startCamera( success_callback, error_callback );
+startCamera( options, success_callback, error_callback );
 
 stopCamera( success_callback, error_callback );
 
@@ -67,7 +67,7 @@ cordova.plugins.CameraServer.startServer({
     // if server is up, it will return the url of http://<server ip>:port/
     // the ip is the active network connection
     // if no wifi or no cell, "127.0.0.1" will be returned.
-    console.log('CameraServer Started @ ' + url); 
+    console.log('CameraServer Started @ ' + url);
 }, function( error ){
     console.log('CameraServer Start failed: ' + error);
 });
@@ -76,7 +76,9 @@ cordova.plugins.CameraServer.startServer({
 Start the Camera Capture (will act on demand when a HTTP request arrives)
 
 ```javascript
-cordova.plugins.CameraServer.startCamera(function(){
+cordova.plugins.CameraServer.startCamera({
+    'camera':'front'
+  },function(){
       console.log('Capture Started');
   },function( error ){
       console.log('CameraServer StartCapture failed: ' + error);
@@ -122,8 +124,8 @@ Which is itself based on:
 * [NanoHTTPD](https://github.com/NanoHttpd/nanohttpd), written in java, for java / android, by psh.
 * [CocoaHTTPServer](https://github.com/robbiehanson/CocoaHTTPServer), written in Obj-C, for iOS / Mac OS X, by robbiehanson.
 
-You can use this plugin for FREE. 
+You can use this plugin for FREE.
 
-Feel free to fork, improve and send pull request. 
+Feel free to fork, improve and send pull request.
 
 We will of course appreciate if you share any improvement or addition made to the plugin.

@@ -112,7 +112,7 @@ public final class CameraManager {
 			android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
 
 			int i=0;
-			for(; i<Camera.getNumberOfCameras(); i++){
+			for(; i<n; i++){
 
 				Camera.getCameraInfo(i, info);
 				if(info.facing == mDesiredFacing)
