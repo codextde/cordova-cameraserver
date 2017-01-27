@@ -10,14 +10,14 @@ cameraserver_exports.startServer = function(options, success, error) {
 			    'localhost_only': false,
 		  		'json_info' : '{"AppVersion":"Undefined"}'
 			  };
-	  
+
 	  // Merge optional settings into defaults.
 	  for (var key in defaults) {
 	    if (typeof options[key] !== 'undefined') {
 	      defaults[key] = options[key];
 	    }
 	  }
-			  
+
   exec(success, error, "CameraServer", "startServer", [ defaults ]);
 };
 
@@ -41,8 +41,18 @@ cameraserver_exports.getNumRequests = function(success, error) {
 	exec(success, error, "CameraServer", "getNumRequests", []);
 };
 
-cameraserver_exports.startCamera = function(success, error) {
-	exec(success, error, "CameraServer", "startCamera", []);
+cameraserver_exports.startCamera = function(options, success, error) {
+  var defaults = {
+        'camera': 'front'
+      };
+
+      // Merge optional settings into defaults.
+  	  for (var key in defaults) {
+  	    if (typeof options[key] !== 'undefined') {
+  	      defaults[key] = options[key];
+  	    }
+  	  }
+	exec(success, error, "CameraServer", "startCamera", [ defaults ]);
 };
 
 cameraserver_exports.stopCamera = function(success, error) {
@@ -127,4 +137,3 @@ cameraserver_exports.setInfo = function(options, success, error) {
 
 
 module.exports = cameraserver_exports;
-
